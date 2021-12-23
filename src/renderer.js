@@ -18,7 +18,6 @@ class Renderer {
   }
 
   resize({ width, height, dpr }) {
-    console.log(width, height, dpr);
     this.renderer.setPixelRatio = dpr;
     this.renderer.setSize(width, height);
     // this.composer.setSize(width, height);
@@ -26,7 +25,7 @@ class Renderer {
     this.camera.updateProjectionMatrix();
   }
 
-  updateState({ geometry, envMap, textures }) {
+  updateState({ geometry, metalness, roughness, envMap, textures }) {
     let scene = new THREE.Scene();
     this.scene = scene;
 
@@ -45,8 +44,8 @@ class Renderer {
     if (geometry) {
       let material = new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
-        metalness: 1.0,
-        roughness: 0.0,
+        metalness: metalness,
+        roughness: roughness,
 
         envMap: envMap,
       });

@@ -1,7 +1,10 @@
 import { createStore } from "redux";
 import { loadGeometry, loadTextures, loadEnvironmentMap } from "./lib/loader";
 
-const initState = {};
+const initState = {
+  metalness: 0,
+  roughness: 0.2,
+};
 
 const AppActions = {
   UpdateParam: "UpdateParam",
