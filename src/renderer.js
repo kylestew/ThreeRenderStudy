@@ -21,10 +21,16 @@ class Renderer {
     this.camera.updateProjectionMatrix();
   }
 
-  updateState(state) {
-    this.scene = new THREE.Scene();
+  updateState({ geometry }) {
+    let scene = new THREE.Scene();
+    this.scene = scene;
 
-    console.log(state);
+    if (geometry) {
+      let material = new THREE.MeshBasicMaterial();
+      let mesh = new THREE.Mesh(geometry, material);
+      mesh.scale.set(0.25, 0.25, 0.25);
+      scene.add(mesh);
+    }
   }
 
   update(time, deltaTime) {}

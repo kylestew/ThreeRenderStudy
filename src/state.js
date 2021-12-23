@@ -1,11 +1,8 @@
 import { createStore } from "redux";
 
-const initState = {
-  gridDensity: 4,
-  enableStroke: true,
-  lineWidth: 9.0,
-  lineColor: "#fff",
-};
+import { loadGeometry } from "./lib/loader";
+
+const initState = {};
 
 const AppActions = {
   UpdateParam: "UpdateParam",
@@ -13,13 +10,25 @@ const AppActions = {
 
 function appReducer(state = initState, action) {
   switch (action.type) {
+    case AppActions.UpdateParam:
+      return Object.assign({}, state, action.payload);
+
     default:
       return state;
   }
 }
 
 function createApp() {
-  return createStore(appReducer);
+  let store = createStore(appReducer);
+
+  loadGeometry((geometry) => {
+    store.dispatch({
+      type: AppActions.UpdateParam,
+      payload: { geometry },
+    });
+  });
+
+  return store;
 }
 
 export { AppActions, createApp };
