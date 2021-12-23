@@ -1,6 +1,11 @@
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import * as THREE from "three";
+
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 
 import modelUrl from "/assets/dragon.glb?url";
+import textureUrl from "/assets/texture.jpg?url";
+import hdrUrl from "/assets/empty_warehouse_01_2k.hdr?url";
 
 function loadGeometry(callback) {
   new GLTFLoader().load(modelUrl, (gltf) => {
@@ -23,4 +28,18 @@ function loadGeometry(callback) {
   });
 }
 
-export { loadGeometry };
+function loadTextures(callback) {
+  const textureLoader = new THREE.TextureLoader();
+  const bgTexture = textureLoader.load(textureUrl);
+
+  callback({ bgTexture });
+}
+
+function loadEnvironmentMap(callback) {
+  new RGBELoader().load(hdrUrl, (envMap) => {
+    envMap.mapping = THREE.EquirectangularReflectionMapping;
+    callback(envMap);
+  });
+}
+
+export { loadGeometry, loadTextures, loadEnvironmentMap };

@@ -29,6 +29,7 @@ function init() {
 }
 
 function updateState() {
+  console.log("state:", app.getState());
   renderer.updateState(app.getState());
 }
 

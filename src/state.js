@@ -1,6 +1,5 @@
 import { createStore } from "redux";
-
-import { loadGeometry } from "./lib/loader";
+import { loadGeometry, loadTextures, loadEnvironmentMap } from "./lib/loader";
 
 const initState = {};
 
@@ -25,6 +24,20 @@ function createApp() {
     store.dispatch({
       type: AppActions.UpdateParam,
       payload: { geometry },
+    });
+  });
+
+  loadTextures((textures) => {
+    store.dispatch({
+      type: AppActions.UpdateParam,
+      payload: { textures },
+    });
+  });
+
+  loadEnvironmentMap((envMap) => {
+    store.dispatch({
+      type: AppActions.UpdateParam,
+      payload: { envMap },
     });
   });
 
