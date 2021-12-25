@@ -5,7 +5,6 @@ import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 
 import modelUrl from "/assets/dragon.glb?url";
 import textureUrl from "/assets/texture.jpg?url";
-import hdrUrl from "/assets/empty_warehouse_01_2k.hdr?url";
 
 function loadGeometry(callback) {
   new GLTFLoader().load(modelUrl, (gltf) => {
@@ -35,8 +34,8 @@ function loadTextures(callback) {
   callback({ bgTexture });
 }
 
-function loadEnvironmentMap(callback) {
-  new RGBELoader().load(hdrUrl, (envMap) => {
+function loadEnvironmentMap(url, callback) {
+  new RGBELoader().load(url, (envMap) => {
     envMap.mapping = THREE.EquirectangularReflectionMapping;
     callback(envMap);
   });

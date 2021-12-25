@@ -1,18 +1,15 @@
-import { createApp, AppActions } from "./src/state";
+import store from "./src/store";
 import { createGUI } from "./src/gui";
 import Renderer from "./src/renderer";
-
 import Stats from "stats.js";
 
-let app, stats, renderer;
+let stats, renderer;
 
 init();
 animate();
 
 function init() {
-  app = createApp();
-
-  createGUI(app);
+  createGUI(store);
 
   stats = new Stats();
   stats.showPanel(0);
@@ -24,20 +21,20 @@ function init() {
   onWindowResize(); // set initial size
 
   // watch app state for changes
-  app.subscribe(updateState);
+  store.subscribe(updateState);
   updateState();
 }
 
 function updateState() {
-  console.log("state:", app.getState());
-  renderer.updateState(app.getState());
+  console.log("UPDATE STATE", store.getState());
+  renderer.updateState(store.getState());
 }
 
 function animate(time) {
   if (stats) stats.begin();
   renderer.render(time);
   if (stats) stats.end();
-  requestAnimationFrame(animate);
+  // requestAnimationFrame(animate);
 }
 
 function onWindowResize() {
