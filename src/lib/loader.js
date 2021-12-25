@@ -5,6 +5,7 @@ import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 
 import modelUrl from "/assets/dragon.glb?url";
 import textureUrl from "/assets/texture.jpg?url";
+import normalMapUrl from "/assets/normal.jpg?url";
 
 function loadGeometry(callback) {
   new GLTFLoader().load(modelUrl, (gltf) => {
@@ -29,9 +30,14 @@ function loadGeometry(callback) {
 
 function loadTextures(callback) {
   const textureLoader = new THREE.TextureLoader();
-  const bgTexture = textureLoader.load(textureUrl);
 
-  callback({ bgTexture });
+  const backdropTexture = textureLoader.load(textureUrl);
+
+  const normalMapTexture = textureLoader.load(normalMapUrl);
+  normalMapTexture.wrapS = THREE.RepeatWrapping;
+  normalMapTexture.wrapT = THREE.RepeatWrapping;
+
+  callback({ backdropTexture, normalMapTexture });
 }
 
 function loadEnvironmentMap(url, callback) {

@@ -5,9 +5,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 class Renderer {
   constructor() {
     this.renderer = new THREE.WebGLRenderer({
-      antialias: false,
+      antialias: true,
     });
-    this.renderer.setClearColor(0x1f1e1c, 1);
     document.body.appendChild(this.renderer.domElement);
 
     this.camera = new THREE.PerspectiveCamera(52, 1, 0.01, 100);
@@ -27,31 +26,63 @@ class Renderer {
     this.camera.updateProjectionMatrix();
   }
 
-  updateState({ geometry, metalness, roughness, envMap, textures }) {
+  updateState({
+    envMap,
+    enableBackdrop,
+    backdropTexture,
+
+    geometry,
+    metalness,
+    roughness,
+    transmission,
+    ior,
+    reflectivity,
+    thickness,
+    envMapIntensity,
+    clearcoat,
+    clearcoatRoughness,
+    normalScale,
+    normalMapTexture,
+    clearcoatNormalScale,
+    normalRepeat,
+  }) {
     let scene = new THREE.Scene();
     this.scene = scene;
 
     scene.background = envMap;
 
     // backdrop image plane
-    // if (textures.bgTexture) {
-    //   const bgGeometry = new THREE.PlaneGeometry(8, 8);
-    //   const bgMaterial = new THREE.MeshBasicMaterial({
-    //     map: textures.bgTexture,
-    //   });
-    //   const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
-    //   bgMesh.position.set(0, 0, -1);
-    //   scene.add(bgMesh);
-    // }
+    if (enableBackdrop == true && backdropTexture) {
+      const bgGeometry = new THREE.PlaneGeometry(8, 8);
+      const bgMaterial = new THREE.MeshBasicMaterial({
+        map: backdropTexture,
+      });
+      const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
+      bgMesh.position.set(0, 0, -1);
+      scene.add(bgMesh);
+    }
 
     // hero mesh
     if (geometry) {
+      console.log(normalMapTexture);
+      normalMapTexture.repeat.set(normalRepeat, normalRepeat);
+
       let material = new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
-        metalness: metalness,
-        roughness: roughness,
-
+        metalness,
+        roughness,
+        transmission,
+        ior,
+        reflectivity,
+        thickness,
         envMap: envMap,
+        envMapIntensity,
+        clearcoat,
+        clearcoatRoughness,
+        normalScale: new THREE.Vector2(normalScale),
+        normalMap: normalMapTexture,
+        clearcoatNormalMap: normalMapTexture,
+        clearcoatNormalScale: new THREE.Vector2(clearcoatNormalScale),
       });
 
       let mesh = new THREE.Mesh(geometry, material);
@@ -61,10 +92,10 @@ class Renderer {
   }
 
   update(time, deltaTime) {
-    // this.camera.position.x = Math.sin((time / 10) * Math.PI * 2) * 2;
-    // this.camera.position.y = Math.cos((time / 10) * Math.PI * 2) * 2;
-    // this.camera.position.z = 4;
-    // this.camera.lookAt(this.scene.position);
+    this.camera.position.x = Math.sin((time / 10) * Math.PI * 2) * 2;
+    this.camera.position.y = Math.cos((time / 10) * Math.PI * 2) * 2;
+    this.camera.position.z = 4;
+    this.camera.lookAt(this.scene.position);
   }
 
   render(time) {

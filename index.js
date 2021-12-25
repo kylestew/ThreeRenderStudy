@@ -1,4 +1,4 @@
-import loadState from "./src/state";
+import createState from "./src/state";
 import createGUI from "./src/gui";
 import Renderer from "./src/renderer";
 import Stats from "stats.js";
@@ -11,10 +11,10 @@ animate();
 function init() {
   renderer = new Renderer();
 
-  state = loadState(updateState);
+  state = createState(updateState);
   updateState();
 
-  createGUI(state, updateState);
+  createGUI(state);
 
   stats = new Stats();
   stats.showPanel(0);
@@ -25,6 +25,7 @@ function init() {
 }
 
 function updateState() {
+  console.log(state);
   renderer.updateState(state);
 }
 

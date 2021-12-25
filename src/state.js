@@ -2,6 +2,12 @@ import { loadGeometry, loadTextures, loadEnvironmentMap } from "./lib/loader";
 import HDR_OPTIONS from "./lib/hdrs";
 
 const state = {
+  hdrKey: HDR_OPTIONS.keys[0],
+  envMap: undefined,
+  enableBackdrop: true,
+  backdropTexture: undefined,
+  animateCamera: true,
+
   metalness: 0,
   roughness: 0.2,
   transmission: 1,
@@ -14,9 +20,6 @@ const state = {
   normalScale: 0.3,
   clearcoatNormalScale: 0.2,
   normalRepeat: 3,
-
-  hdrKey: HDR_OPTIONS.keys[0],
-  envMap: undefined,
 };
 
 function loadHDR(key) {
@@ -27,9 +30,10 @@ function loadHDR(key) {
   });
 }
 
-function loadState(updateFn) {
+function createState(updateFn) {
   state.updateFn = updateFn;
 
+  // delay loading of extra state so initial state can return
   setTimeout(() => {
     loadTextures((textures) => {
       Object.entries(textures).map((entry) => {
@@ -51,4 +55,4 @@ function loadState(updateFn) {
 
 export { loadHDR };
 
-export default loadState;
+export default createState;
