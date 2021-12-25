@@ -1,0 +1,54 @@
+import { loadGeometry, loadTextures, loadEnvironmentMap } from "./lib/loader";
+import HDR_OPTIONS from "./lib/hdrs";
+
+const state = {
+  metalness: 0,
+  roughness: 0.2,
+  transmission: 1,
+  ior: 1.5,
+  reflectivity: 0.5,
+  thickness: 2.5,
+  envMapIntensity: 1.5,
+  clearcoat: 1,
+  clearcoatRoughness: 0.1,
+  normalScale: 0.3,
+  clearcoatNormalScale: 0.2,
+  normalRepeat: 3,
+
+  hdrKey: HDR_OPTIONS.keys[0],
+  envMap: undefined,
+};
+
+function loadHDR(key) {
+  let url = HDR_OPTIONS.urlForKey(key);
+  loadEnvironmentMap(url, (hdr) => {
+    state.envMap = hdr;
+    state.updateFn();
+  });
+}
+
+function loadState(updateFn) {
+  state.updateFn = updateFn;
+
+  setTimeout(() => {
+    loadTextures((textures) => {
+      Object.entries(textures).map((entry) => {
+        state[entry[0]] = entry[1];
+      });
+      state.updateFn();
+    });
+
+    loadGeometry((geometry) => {
+      state.geometry = geometry;
+      state.updateFn();
+    });
+
+    loadHDR(state.hdrKey);
+  }, 0);
+
+  return state;
+}
+
+export { loadHDR };
+
+export default loadState;

@@ -1,97 +1,88 @@
 import { GUI } from "dat.gui";
-import { updateMaterialParam } from "./lib/materialSlice";
-// import { AppActions, HDR_OPTIONS } from "./store";
+import { loadHDR } from "./state";
+import HDR_OPTIONS from "./lib/hdrs";
 
-function createGUI(store) {
-  const state = store.getState();
-  const material = Object.assign({}, state.material);
-
+function createGUI(state, updatedFn) {
   const gui = new GUI();
-
-  const updateMaterial = (value) => store.dispatch(updateMaterialParam(value));
 
   var materialFolder = gui.addFolder("Material");
   materialFolder.open();
 
-  materialFolder
-    .add(material, "metalness", 0, 1, 0.01)
-    .onChange((val) => updateMaterial({ metalness: val }));
+  materialFolder.add(state, "metalness", 0, 1, 0.01).onChange(updatedFn);
+  materialFolder.add(state, "roughness", 0, 1, 0.01).onChange(updatedFn);
+  materialFolder.add(state, "transmission", 0, 1, 0.01).onChange(updatedFn);
+  materialFolder.add(state, "ior", 1, 2.33, 0.01).onChange(updatedFn);
 
-  materialFolder
-    .add(material, "roughness", 0, 1, 0.01)
-    .onChange((val) => updateMaterial({ roughness: val }));
+  // materialFolder
+  //   .add(material, "reflectivity", 0, 1, 0.01)
+  //   .onChange((val) => updateMaterial({ reflectivity: val }));
 
-  materialFolder
-    .add(material, "transmission", 0, 1, 0.01)
-    .onChange((val) => updateMaterial({ transmission: val }));
+  // materialFolder
+  //   .add(material, "thickness", 0, 5, 0.1)
+  //   .onChange((val) => updateMaterial({ thickness: val }));
 
-  materialFolder
-    .add(material, "ior", 1, 2.33, 0.01)
-    .onChange((val) => updateMaterial({ ior: val }));
+  // materialFolder
+  //   .add(material, "envMapIntensity", 0, 3, 0.1)
+  //   .onChange((val) => updateMaterial({ envMapIntensity: val }));
 
-  materialFolder
-    .add(material, "reflectivity", 0, 1, 0.01)
-    .onChange((val) => updateMaterial({ reflectivity: val }));
+  // materialFolder
+  //   .add(material, "clearcoat", 0, 1, 0.01)
+  //   .onChange((val) => updateMaterial({ clearcoat: val }));
 
-  materialFolder
-    .add(material, "thickness", 0, 5, 0.1)
-    .onChange((val) => updateMaterial({ thickness: val }));
+  // materialFolder
+  //   .add(material, "clearcoatRoughness", 0, 1, 0.01)
+  //   .onChange((val) => updateMaterial({ clearcoatRoughness: val }));
 
-  materialFolder
-    .add(material, "envMapIntensity", 0, 3, 0.1)
-    .onChange((val) => updateMaterial({ envMapIntensity: val }));
+  // materialFolder
+  //   .add(material, "normalScale", 0, 1, 0.01)
+  //   .onChange((val) => updateMaterial({ normalScale: val }));
 
-  materialFolder
-    .add(material, "clearcoat", 0, 1, 0.01)
-    .onChange((val) => updateMaterial({ clearcoat: val }));
+  // materialFolder
+  //   .add(material, "clearcoatNormalScale", 0, 5, 0.01)
+  //   .onChange((val) => updateMaterial({ clearcoatNormalScale: val }));
 
-  materialFolder
-    .add(material, "clearcoatRoughness", 0, 1, 0.01)
-    .onChange((val) => updateMaterial({ clearcoatRoughness: val }));
+  // materialFolder
+  //   .add(material, "normalRepeat", 1, 4, 1)
+  //   .onChange((val) => updateMaterial({ normalRepeat: val }));
 
-  materialFolder
-    .add(material, "normalScale", 0, 1, 0.01)
-    .onChange((val) => updateMaterial({ normalScale: val }));
+  // // var postProcFolder = gui.addFolder("Post Processing");
+  // // postProcFolder.open();
 
-  materialFolder
-    .add(material, "clearcoatNormalScale", 0, 5, 0.01)
-    .onChange((val) => updateMaterial({ clearcoatNormalScale: val }));
+  // // postProcFolder.add(state, "bloomThreshold", 0, 1, 0.01);
+  // // .onChange((val) => updateParam({ bloomThreshold: val }));
 
-  materialFolder
-    .add(material, "normalRepeat", 1, 4, 1)
-    .onChange((val) => updateMaterial({ normalRepeat: val }));
+  // // postProcFolder
+  // //   .add(state, "bloomStrength", 0, 5, 0.01)
+  // //   .onChange((val) => updateParam({ bloomStrength: val }));
 
-  // var postProcFolder = gui.addFolder("Post Processing");
-  // postProcFolder.open();
+  // // postProcFolder
+  // //   .add(state, "bloomRadius", 0, 1, 0.01)
+  // //   .onChange((val) => updateParam({ bloomRadius: val }));
 
-  // postProcFolder.add(state, "bloomThreshold", 0, 1, 0.01);
-  // .onChange((val) => updateParam({ bloomThreshold: val }));
+  var sceneFolder = gui.addFolder("Scene");
+  sceneFolder.open();
 
-  // postProcFolder
-  //   .add(state, "bloomStrength", 0, 5, 0.01)
-  //   .onChange((val) => updateParam({ bloomStrength: val }));
+  sceneFolder
+    .add(state, "hdrKey", HDR_OPTIONS.keys)
+    .name("HDR")
+    .onChange((val) => {
+      loadHDR(val);
+    });
 
-  // postProcFolder
-  //   .add(state, "bloomRadius", 0, 1, 0.01)
-  //   .onChange((val) => updateParam({ bloomRadius: val }));
-
-  // var sceneFolder = gui.addFolder("Scene");
-  // sceneFolder.open();
-
-  // sceneFolder.add(state, "hdr", HDR_OPTIONS.names).onChange((val) =>
-  //   app.dispatch({
-  //     type: AppActions.SelectHDR,
-  //     payload: val,
-  //   })
+  // .onChange((val) =>
+  // app.dispatch({
+  //   type: AppActions.SelectHDR,
+  //   payload: val,
+  // })
   // );
 
-  // sceneFolder
-  //   .add(state, "metalness", 0, 1, 0.01)
-  //   .onChange((val) => dispatchUpdate({ metalness: val }));
+  // // sceneFolder
+  // //   .add(state, "metalness", 0, 1, 0.01)
+  // //   .onChange((val) => dispatchUpdate({ metalness: val }));
 
-  // sceneFolder
-  //   .add(state, "roughness", 0, 1, 0.01)
-  //   .onChange((val) => dispatchUpdate({ roughness: val }));
+  // // sceneFolder
+  // //   .add(state, "roughness", 0, 1, 0.01)
+  // //   .onChange((val) => dispatchUpdate({ roughness: val }));
 }
 
-export { createGUI };
+export default createGUI;

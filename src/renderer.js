@@ -44,20 +44,20 @@ class Renderer {
     //   scene.add(bgMesh);
     // }
 
-    // // hero mesh
-    // if (geometry) {
-    //   let material = new THREE.MeshPhysicalMaterial({
-    //     color: 0xffffff,
-    //     metalness: metalness,
-    //     roughness: roughness,
+    // hero mesh
+    if (geometry) {
+      let material = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff,
+        metalness: metalness,
+        roughness: roughness,
 
-    //     envMap: envMap,
-    //   });
+        envMap: envMap,
+      });
 
-    //   let mesh = new THREE.Mesh(geometry, material);
-    //   mesh.scale.set(0.25, 0.25, 0.25);
-    //   scene.add(mesh);
-    // }
+      let mesh = new THREE.Mesh(geometry, material);
+      mesh.scale.set(0.25, 0.25, 0.25);
+      scene.add(mesh);
+    }
   }
 
   update(time, deltaTime) {
