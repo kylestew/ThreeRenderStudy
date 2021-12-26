@@ -62,12 +62,12 @@ class Renderer {
 
     // backdrop image plane
     if (enableBackdrop == true && backdropTexture) {
-      const bgGeometry = new THREE.PlaneGeometry(6.6666, 5);
+      const bgGeometry = new THREE.PlaneGeometry(8, 6);
       const bgMaterial = new THREE.MeshBasicMaterial({
         map: backdropTexture,
       });
       const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
-      bgMesh.position.set(0, 0, -1);
+      bgMesh.position.set(0, 0, -2);
       scene.add(bgMesh);
     }
 
@@ -118,16 +118,21 @@ class Renderer {
     this.composer = composer;
   }
 
-  update(time, { animateCamera, rotateMesh }) {
-    // TODO: rotate mesh?
-    if (rotateMesh) {
-      // const ROTATE_TIME = 10; // Time in seconds for a full rotation
-      // const xAxis = new THREE.Vector3(1, 0, 0);
-      // const yAxis = new THREE.Vector3(0, 1, 0);
-      // const rotateX = (deltaTime / ROTATE_TIME) * Math.PI * 2;
-      // const rotateY = (deltaTime / ROTATE_TIME) * Math.PI * 2;
-      // this.mesh.rotateOnWorldAxis(xAxis, rotateX);
-      // this.mesh.rotateOnWorldAxis(yAxis, rotateY);
+  update(time, deltaTime, { animateCamera, rotateMesh }) {
+    if (rotateMesh && this.mesh) {
+      const ROTATE_TIME = 16; // Time in seconds for a full rotation
+
+      const xAxis = new THREE.Vector3(1, 0, 0);
+      const yAxis = new THREE.Vector3(0, 1, 0);
+      const zAxis = new THREE.Vector3(0, 0, 1);
+
+      const rotateX = 0.8 * (deltaTime / ROTATE_TIME) * Math.PI * 2;
+      const rotateY = 1.0 * (deltaTime / ROTATE_TIME) * Math.PI * 2;
+      const rotateZ = 0.3 * (deltaTime / ROTATE_TIME) * Math.PI * 2;
+
+      this.mesh.rotateOnWorldAxis(xAxis, rotateX);
+      this.mesh.rotateOnWorldAxis(yAxis, rotateY);
+      this.mesh.rotateOnWorldAxis(zAxis, rotateZ);
     }
 
     if (animateCamera) {
@@ -138,8 +143,8 @@ class Renderer {
     }
   }
 
-  render(time, state) {
-    this.update(time, state);
+  render(time, deltaTime, state) {
+    this.update(time, deltaTime, state);
     this.controls.update();
     this.composer.render(this.scene, this.camera);
   }

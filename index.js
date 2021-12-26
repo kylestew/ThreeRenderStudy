@@ -3,7 +3,7 @@ import createGUI from "./src/gui";
 import Renderer from "./src/renderer";
 import Stats from "stats.js";
 
-let state, stats, renderer;
+let state, stats, renderer, prevTime;
 
 init();
 animate();
@@ -29,8 +29,11 @@ function updateState() {
 }
 
 function animate(time) {
+  if (prevTime === undefined) prevTime = time;
+  const deltaTime = Math.max(time - prevTime, 0);
+  prevTime = time;
   if (stats) stats.begin();
-  renderer.render(time / 1000.0, state);
+  renderer.render(time / 1000.0, deltaTime / 1000.0, state);
   if (stats) stats.end();
   requestAnimationFrame(animate);
 }
