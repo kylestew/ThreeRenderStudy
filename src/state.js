@@ -1,4 +1,9 @@
-import { loadGeometry, loadTextures, loadEnvironmentMap } from "./lib/loader";
+import {
+  loadGeometry,
+  loadTextures,
+  loadEnvironmentMap,
+  loadLUT,
+} from "./lib/loader";
 import HDR_OPTIONS from "./lib/hdrs";
 
 const state = {
@@ -10,7 +15,7 @@ const state = {
   rotateMesh: true,
 
   metalness: 0,
-  roughness: 0.35,
+  roughness: 0.3,
   transmission: 1,
   ior: 1.6,
   reflectivity: 0.6,
@@ -22,9 +27,10 @@ const state = {
   clearcoatNormalScale: 0.3,
   normalRepeat: 3,
 
-  bloomThreshold: 0.8,
-  bloomStrength: 0.4,
-  bloomRadius: 0.5,
+  bloomThreshold: 0.85,
+  bloomStrength: 0.3,
+  bloomRadius: 0.05,
+  lut: undefined,
 };
 
 function loadHDR(key) {
@@ -53,6 +59,11 @@ function createState(updateFn) {
     });
 
     loadHDR(state.hdrKey);
+
+    loadLUT((lut) => {
+      state.lut = lut;
+      state.updateFn();
+    });
   }, 0);
 
   return state;

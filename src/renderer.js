@@ -3,13 +3,17 @@ import * as THREE from "three";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
+import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
+import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
+import { LUTPass } from "three/examples/jsm/postprocessing/LUTPass.js";
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 class Renderer {
   constructor() {
     this.renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: false,
     });
     document.body.appendChild(this.renderer.domElement);
 
@@ -54,6 +58,7 @@ class Renderer {
     bloomStrength,
     bloomRadius,
     bloomThreshold,
+    lut,
   }) {
     let scene = new THREE.Scene();
     this.scene = scene;
@@ -100,12 +105,23 @@ class Renderer {
     }
 
     // post processing
+    // TODO: refactor this
     const renderPass = new RenderPass(this.scene, this.camera);
     const composer = new EffectComposer(this.renderer);
     composer.addPass(renderPass);
 
     if (this.size) {
       const [width, height] = this.size;
+
+      let fxaaPass = new ShaderPass(FXAAShader);
+      const pixelRatio = this.renderer.getPixelRatio();
+      console.log(pixelRatio);
+      fxaaPass.material.uniforms["resolution"].value.x =
+        1 / (width * pixelRatio);
+      fxaaPass.material.uniforms["resolution"].value.y =
+        1 / (height * pixelRatio);
+      composer.addPass(fxaaPass);
+
       const bloomPass = new UnrealBloomPass(
         new THREE.Vector2(width, height),
         bloomStrength,
@@ -115,24 +131,29 @@ class Renderer {
       composer.addPass(bloomPass);
     }
 
+    composer.addPass(new ShaderPass(GammaCorrectionShader));
+
+    if (lut) {
+      let lutPass = new LUTPass();
+      lutPass.lut = lut.texture3D;
+      lutPass.intensity = 1.2;
+      lutPass.enabled = true;
+      composer.addPass(lutPass);
+    }
+
     this.composer = composer;
   }
 
   update(time, deltaTime, { animateCamera, rotateMesh }) {
     if (rotateMesh && this.mesh) {
-      const ROTATE_TIME = 16; // Time in seconds for a full rotation
-
-      const xAxis = new THREE.Vector3(1, 0, 0);
-      const yAxis = new THREE.Vector3(0, 1, 0);
-      const zAxis = new THREE.Vector3(0, 0, 1);
-
-      const rotateX = 0.8 * (deltaTime / ROTATE_TIME) * Math.PI * 2;
-      const rotateY = 1.0 * (deltaTime / ROTATE_TIME) * Math.PI * 2;
-      const rotateZ = 0.3 * (deltaTime / ROTATE_TIME) * Math.PI * 2;
-
-      this.mesh.rotateOnWorldAxis(xAxis, rotateX);
-      this.mesh.rotateOnWorldAxis(yAxis, rotateY);
-      this.mesh.rotateOnWorldAxis(zAxis, rotateZ);
+      const ROTATE_TIME = 18; // Time in seconds for a full rotation
+      const rotate = (deltaTime / ROTATE_TIME) * Math.PI * 2;
+      const axis = new THREE.Vector3(
+        0.2 * Math.sin(time),
+        1.0,
+        0.2 * Math.cos(time)
+      );
+      this.mesh.rotateOnWorldAxis(axis, rotate);
     }
 
     if (animateCamera) {
