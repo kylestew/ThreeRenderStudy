@@ -18,11 +18,17 @@ function createGUI(state) {
       loadHDR(val);
     });
 
-  // TODO: toggle backdrop
   sceneFolder.add(state, "enableBackdrop").name("Backdrop").onChange(updateFn);
 
+  sceneFolder
+    .add(state, "animateCamera")
+    .name("Animate Camera")
+    .onChange(updateFn);
+
+  sceneFolder.add(state, "rotateMesh").name("Rotate Mesh").onChange(updateFn);
+
   let materialFolder = gui.addFolder("Material");
-  materialFolder.open();
+  // materialFolder.open();
 
   materialFolder.add(state, "metalness", 0, 1, 0.01).onChange(updateFn);
   materialFolder.add(state, "roughness", 0, 1, 0.01).onChange(updateFn);
@@ -44,26 +50,11 @@ function createGUI(state) {
   materialFolder.add(state, "normalRepeat", 1, 4, 1).onChange(updateFn);
 
   let postProcFolder = gui.addFolder("Post Processing");
-  // // postProcFolder.open();
+  // postProcFolder.open();
 
-  // // postProcFolder.add(state, "bloomThreshold", 0, 1, 0.01);
-  // // .onChange((val) => updateParam({ bloomThreshold: val }));
-
-  // // postProcFolder
-  // //   .add(state, "bloomStrength", 0, 5, 0.01)
-  // //   .onChange((val) => updateParam({ bloomStrength: val }));
-
-  // // postProcFolder
-  // //   .add(state, "bloomRadius", 0, 1, 0.01)
-  // //   .onChange((val) => updateParam({ bloomRadius: val }));
-
-  let animationFolder = gui.addFolder("Animation");
-  animationFolder.open();
-
-  animationFolder
-    .add(state, "animateCamera")
-    .name("Animate Camera")
-    .onChange(updateFn);
+  postProcFolder.add(state, "bloomThreshold", 0, 1, 0.01).onChange(updateFn);
+  postProcFolder.add(state, "bloomStrength", 0, 5, 0.01).onChange(updateFn);
+  postProcFolder.add(state, "bloomRadius", 0, 1, 0.01).onChange(updateFn);
 }
 
 export default createGUI;

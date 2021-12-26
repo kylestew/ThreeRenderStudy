@@ -2,12 +2,17 @@ import * as THREE from "three";
 
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
+import { TeapotGeometry } from "three/examples/jsm/geometries/TeapotGeometry";
 
 import modelUrl from "/assets/dragon.glb?url";
 import backdropTextureUrl from "/assets/dan-cristian-padure-SMSLyc9FHl0-unsplash.jpg?url";
 import normalMapUrl from "/assets/normal.jpg?url";
 
 function loadGeometry(callback) {
+  // teapot
+  // const geometry = new TeapotGeometry(3, 16, true, true, true, true, false);
+
+  // dragon
   new GLTFLoader().load(modelUrl, (gltf) => {
     const dragon = gltf.scene.children.find((mesh) => mesh.name === "Dragon");
 
