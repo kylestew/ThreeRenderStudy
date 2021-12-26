@@ -53,7 +53,7 @@ class Renderer {
 
     // backdrop image plane
     if (enableBackdrop == true && backdropTexture) {
-      const bgGeometry = new THREE.PlaneGeometry(8, 8);
+      const bgGeometry = new THREE.PlaneGeometry(6.6666, 5);
       const bgMaterial = new THREE.MeshBasicMaterial({
         map: backdropTexture,
       });
@@ -91,16 +91,17 @@ class Renderer {
     }
   }
 
-  update(time, deltaTime) {
-    this.camera.position.x = Math.sin((time / 10) * Math.PI * 2) * 2;
-    this.camera.position.y = Math.cos((time / 10) * Math.PI * 2) * 2;
-    this.camera.position.z = 4;
-    this.camera.lookAt(this.scene.position);
+  update(time, { animateCamera }) {
+    if (animateCamera) {
+      this.camera.position.x = 1.8 * Math.sin((time / 9) * Math.PI * 2);
+      this.camera.position.y = 1.8 * Math.cos((time / 9) * Math.PI * 2);
+      this.camera.position.z = 4;
+      this.camera.lookAt(this.scene.position);
+    }
   }
 
-  render(time) {
-    time /= 1000.0;
-    this.update(time);
+  render(time, state) {
+    this.update(time, state);
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }

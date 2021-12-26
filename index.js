@@ -25,13 +25,12 @@ function init() {
 }
 
 function updateState() {
-  console.log(state);
   renderer.updateState(state);
 }
 
 function animate(time) {
   if (stats) stats.begin();
-  renderer.render(time);
+  renderer.render(time / 1000.0, state);
   if (stats) stats.end();
   requestAnimationFrame(animate);
 }

@@ -19,7 +19,7 @@ function createGUI(state) {
     });
 
   // TODO: toggle backdrop
-  sceneFolder.add(state, "enableBackdrop").onChange(updateFn);
+  sceneFolder.add(state, "enableBackdrop").name("Backdrop").onChange(updateFn);
 
   let materialFolder = gui.addFolder("Material");
   materialFolder.open();
@@ -58,6 +58,12 @@ function createGUI(state) {
   // //   .onChange((val) => updateParam({ bloomRadius: val }));
 
   let animationFolder = gui.addFolder("Animation");
+  animationFolder.open();
+
+  animationFolder
+    .add(state, "animateCamera")
+    .name("Animate Camera")
+    .onChange(updateFn);
 }
 
 export default createGUI;

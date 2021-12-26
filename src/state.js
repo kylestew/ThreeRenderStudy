@@ -6,20 +6,21 @@ const state = {
   envMap: undefined,
   enableBackdrop: true,
   backdropTexture: undefined,
-  animateCamera: true,
 
   metalness: 0,
   roughness: 0.2,
   transmission: 1,
   ior: 1.5,
   reflectivity: 0.5,
-  thickness: 2.5,
-  envMapIntensity: 1.5,
+  thickness: 3.0,
+  envMapIntensity: 1.8,
   clearcoat: 1,
   clearcoatRoughness: 0.1,
   normalScale: 0.3,
   clearcoatNormalScale: 0.2,
   normalRepeat: 3,
+
+  animateCamera: false,
 };
 
 function loadHDR(key) {
