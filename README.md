@@ -7,12 +7,11 @@ Playing with the powerful [three.js](https://threejs.org/) library, created an e
 - Physical material shader
 - Post processing
 
-## TODO:
+## TODO
 
-https://threejs.org/examples/#webgl_materials_physical_clearcoat
-[ ] Textures
-[ ] Clear coat
+[ ] Selectable Model
+
 [ ] Toggle FXAA
 [ ] Selectable LUT
-[ ] Selectable Model
+
 [ ] Finish the README

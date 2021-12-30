@@ -52,6 +52,8 @@ function createGUI(state) {
   let postProcFolder = gui.addFolder("Post Processing");
   // postProcFolder.open();
 
+  postProcFolder.add(state, "enableFXAA").onChange(updateFn);
+  postProcFolder.add(state, "enableBloom").onChange(updateFn);
   postProcFolder.add(state, "bloomThreshold", 0, 1, 0.01).onChange(updateFn);
   postProcFolder.add(state, "bloomStrength", 0, 2, 0.01).onChange(updateFn);
   postProcFolder.add(state, "bloomRadius", 0, 0.4, 0.01).onChange(updateFn);

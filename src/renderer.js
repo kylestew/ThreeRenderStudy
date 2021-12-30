@@ -1,5 +1,7 @@
 import * as THREE from "three";
 
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
@@ -7,8 +9,6 @@ import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 import { LUTPass } from "three/examples/jsm/postprocessing/LUTPass.js";
-
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 class Renderer {
   constructor() {
@@ -38,12 +38,23 @@ class Renderer {
     this.camera.updateProjectionMatrix();
   }
 
-  updateState({
-    envMap,
-    enableBackdrop,
-    backdropTexture,
+  _createBackdropMesh({ backdropTexture }) {
+    if (backdropTexture) {
+      const bgGeometry = new THREE.PlaneGeometry(8, 6);
+      const bgMaterial = new THREE.MeshBasicMaterial({
+        map: backdropTexture,
+      });
+      const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
+      bgMesh.position.set(0, 0, -2);
+      return bgMesh;
+    }
+  }
 
+  _createHeroMesh({
     geometry,
+
+    envMap,
+
     metalness,
     roughness,
     transmission,
@@ -57,58 +68,43 @@ class Renderer {
     normalMapTexture,
     clearcoatNormalScale,
     normalRepeat,
+  }) {
+    if (!geometry) return;
 
+    normalMapTexture.repeat.set(normalRepeat, normalRepeat);
+
+    let material = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      metalness,
+      roughness,
+      transmission,
+      ior,
+      reflectivity,
+      thickness,
+      envMap: envMap,
+      envMapIntensity,
+      clearcoat,
+      clearcoatRoughness,
+      normalScale: new THREE.Vector2(normalScale),
+      normalMap: normalMapTexture,
+      clearcoatNormalMap: normalMapTexture,
+      clearcoatNormalScale: new THREE.Vector2(clearcoatNormalScale),
+    });
+
+    let mesh = new THREE.Mesh(geometry, material);
+    mesh.scale.set(0.25, 0.25, 0.25);
+
+    return mesh;
+  }
+
+  _createPostProcessing({
+    enableFXAA,
+    enableBloom,
     bloomStrength,
     bloomRadius,
     bloomThreshold,
     lut,
   }) {
-    let scene = new THREE.Scene();
-    this.scene = scene;
-
-    scene.background = envMap;
-
-    // backdrop image plane
-    if (enableBackdrop == true && backdropTexture) {
-      const bgGeometry = new THREE.PlaneGeometry(8, 6);
-      const bgMaterial = new THREE.MeshBasicMaterial({
-        map: backdropTexture,
-      });
-      const bgMesh = new THREE.Mesh(bgGeometry, bgMaterial);
-      bgMesh.position.set(0, 0, -2);
-      scene.add(bgMesh);
-    }
-
-    // hero mesh
-    if (geometry) {
-      normalMapTexture.repeat.set(normalRepeat, normalRepeat);
-
-      let material = new THREE.MeshPhysicalMaterial({
-        color: 0xffffff,
-        metalness,
-        roughness,
-        transmission,
-        ior,
-        reflectivity,
-        thickness,
-        envMap: envMap,
-        envMapIntensity,
-        clearcoat,
-        clearcoatRoughness,
-        normalScale: new THREE.Vector2(normalScale),
-        normalMap: normalMapTexture,
-        clearcoatNormalMap: normalMapTexture,
-        clearcoatNormalScale: new THREE.Vector2(clearcoatNormalScale),
-      });
-
-      let mesh = new THREE.Mesh(geometry, material);
-      mesh.scale.set(0.25, 0.25, 0.25);
-      scene.add(mesh);
-      this.mesh = mesh;
-    }
-
-    // post processing
-    // TODO: refactor this
     const renderPass = new RenderPass(this.scene, this.camera);
     const composer = new EffectComposer(this.renderer);
     composer.addPass(renderPass);
@@ -116,21 +112,25 @@ class Renderer {
     if (this.size) {
       const [width, height] = this.size;
 
-      let fxaaPass = new ShaderPass(FXAAShader);
-      const pixelRatio = this.renderer.getPixelRatio();
-      fxaaPass.material.uniforms["resolution"].value.x =
-        1 / (width * pixelRatio);
-      fxaaPass.material.uniforms["resolution"].value.y =
-        1 / (height * pixelRatio);
-      composer.addPass(fxaaPass);
+      if (enableFXAA) {
+        let fxaaPass = new ShaderPass(FXAAShader);
+        const pixelRatio = this.renderer.getPixelRatio();
+        fxaaPass.material.uniforms["resolution"].value.x =
+          1 / (width * pixelRatio);
+        fxaaPass.material.uniforms["resolution"].value.y =
+          1 / (height * pixelRatio);
+        composer.addPass(fxaaPass);
+      }
 
-      const bloomPass = new UnrealBloomPass(
-        new THREE.Vector2(width, height),
-        bloomStrength,
-        bloomRadius,
-        bloomThreshold
-      );
-      composer.addPass(bloomPass);
+      if (enableBloom) {
+        const bloomPass = new UnrealBloomPass(
+          new THREE.Vector2(width, height),
+          bloomStrength,
+          bloomRadius,
+          bloomThreshold
+        );
+        composer.addPass(bloomPass);
+      }
     }
 
     composer.addPass(new ShaderPass(GammaCorrectionShader));
@@ -143,11 +143,36 @@ class Renderer {
       composer.addPass(lutPass);
     }
 
-    this.composer = composer;
+    return composer;
+  }
+
+  updateState(state) {
+    let { envMap, enableBackdrop } = state;
+
+    let scene = new THREE.Scene();
+    scene.background = envMap;
+    this.scene = scene;
+
+    // backdrop image plane
+    if (enableBackdrop) {
+      let backdropMesh = this._createBackdropMesh(state);
+      if (backdropMesh) scene.add(backdropMesh);
+    }
+
+    // hero mesh
+    this.mesh = this._createHeroMesh(state);
+    if (this.mesh) {
+      scene.add(this.mesh);
+    }
+
+    // post processing
+    this.composer = this._createPostProcessing(state);
   }
 
   update(time, deltaTime, { animateCamera, rotateMesh }) {
-    if (rotateMesh && this.mesh) {
+    if (!this.mesh) return;
+
+    if (rotateMesh) {
       const ROTATE_TIME = 18; // Time in seconds for a full rotation
       const rotate = (deltaTime / ROTATE_TIME) * Math.PI * 2;
       const axis = new THREE.Vector3(
@@ -159,17 +184,21 @@ class Renderer {
     }
 
     if (animateCamera) {
-      this.camera.position.x = 1.8 * Math.sin((time / 9) * Math.PI * 2);
-      this.camera.position.y = 1.8 * Math.cos((time / 9) * Math.PI * 2);
+      this.camera.position.x = 1.2 * Math.sin((time / 9) * Math.PI * 2);
+      this.camera.position.y = 1.2 * Math.cos((time / 9) * Math.PI * 2);
       this.camera.position.z = 4;
-      this.camera.lookAt(this.scene.position);
+      this.camera.lookAt(this.mesh.position);
     }
   }
 
   render(time, deltaTime, state) {
     this.update(time, deltaTime, state);
     this.controls.update();
-    this.composer.render(this.scene, this.camera);
+    if (this.composer) {
+      this.composer.render(this.scene, this.camera);
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
   }
 }
 

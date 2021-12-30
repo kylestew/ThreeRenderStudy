@@ -11,7 +11,7 @@ const state = {
   envMap: undefined,
   enableBackdrop: true,
   backdropTexture: undefined,
-  animateCamera: false,
+  animateCamera: true,
   rotateMesh: true,
 
   metalness: 0,
@@ -27,8 +27,10 @@ const state = {
   clearcoatNormalScale: 0.3,
   normalRepeat: 3,
 
+  enableFXAA: true,
+  enableBloom: true,
   bloomThreshold: 0.85,
-  bloomStrength: 0.3,
+  bloomStrength: 0.35,
   bloomRadius: 0.05,
   lut: undefined,
 };
