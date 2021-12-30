@@ -4,9 +4,8 @@
   "description": "Exploring Three.js capabilities",
   "main": "index.js",
   "scripts": {
-    "start": "vite",
-    "build": "vite build",
-    "clean": "rm -rf node_modules"
+    "dev": "vite",
+    "build": "vite build"
   },
   "repository": {
     "type": "git",
