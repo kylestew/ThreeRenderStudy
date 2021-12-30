@@ -17,6 +17,7 @@ class Renderer {
     });
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1;
+    this.renderer.domElement.id = "render-canvas";
     document.body.appendChild(this.renderer.domElement);
 
     this.camera = new THREE.PerspectiveCamera(52, 1, 0.01, 100);
@@ -32,7 +33,7 @@ class Renderer {
     this.size = [width, height];
     this.renderer.setPixelRatio = dpr;
     this.renderer.setSize(width, height);
-    this.composer.setSize(width, height);
+    if (this.composer) this.composer.setSize(width, height);
     this.camera.aspect = width / innerHeight;
     this.camera.updateProjectionMatrix();
   }
@@ -117,7 +118,6 @@ class Renderer {
 
       let fxaaPass = new ShaderPass(FXAAShader);
       const pixelRatio = this.renderer.getPixelRatio();
-      console.log(pixelRatio);
       fxaaPass.material.uniforms["resolution"].value.x =
         1 / (width * pixelRatio);
       fxaaPass.material.uniforms["resolution"].value.y =

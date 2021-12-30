@@ -9,6 +9,7 @@ Playing with the powerful [three.js](https://threejs.org/) library, created an e
 
 ## TODO:
 
+https://threejs.org/examples/#webgl_materials_physical_clearcoat
 [ ] Textures
 [ ] Clear coat
 [ ] Toggle FXAA
