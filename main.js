@@ -61,6 +61,7 @@ function animate(time) {
 }
 
 function onWindowResize() {
+  console.log("window size: ", window.innerWidth, " x ", window.innerHeight);
   renderer.resize({
     width: window.innerWidth,
     height: window.innerHeight,

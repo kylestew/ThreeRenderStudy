@@ -6,8 +6,12 @@ import {
 } from "./lib/loader";
 import HDR_OPTIONS from "./lib/hdrs";
 
+const randomInArray = (items) => {
+  return items[Math.floor(Math.random() * items.length)];
+};
+
 const state = {
-  hdrKey: HDR_OPTIONS.keys[0],
+  hdrKey: randomInArray(HDR_OPTIONS.keys),
   envMap: undefined,
   enableBackdrop: true,
   backdropTexture: undefined,

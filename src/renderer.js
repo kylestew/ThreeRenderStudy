@@ -176,9 +176,9 @@ class Renderer {
       const ROTATE_TIME = 18; // Time in seconds for a full rotation
       const rotate = (deltaTime / ROTATE_TIME) * Math.PI * 2;
       const axis = new THREE.Vector3(
-        0.2 * Math.sin(time),
+        0.1 * Math.sin(time),
         1.0,
-        0.2 * Math.cos(time)
+        0.1 * Math.cos(time)
       );
       this.mesh.rotateOnWorldAxis(axis, rotate);
     }
